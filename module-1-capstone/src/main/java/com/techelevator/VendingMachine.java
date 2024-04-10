@@ -21,6 +21,7 @@ public class VendingMachine {
     private File logFile = new File("module-1-capstone/src/main/resources/Log.txt");
     Map<String, Product> machineInventory = new HashMap<>();
     private double moneyInMachine = 0.00;
+    private double totalProfit = 0.00;
 
     public Map<String, Product> getMachineInventory() {
         return machineInventory;
@@ -94,7 +95,7 @@ public class VendingMachine {
             System.out.println("****** GOOD BYE ******");
         } else if (userChoice.equals("4")) {
             System.out.println();
-            salesReport();
+            reportSales();
         } else {
             System.out.println("User input not accepted.");
             System.out.println("Please choose from menu options below (input must be numeric):");
@@ -216,6 +217,7 @@ public class VendingMachine {
         System.out.println(machineInventory.get(inputSlot).dispenseMessage());
         machineInventory.get(inputSlot).setQuantityRemaining(machineInventory.get(inputSlot).getQuantityRemaining() - 1);
         moneyInMachine -= machineInventory.get(inputSlot).getPrice();
+        totalProfit += machineInventory.get(inputSlot).getPrice();
         System.out.println("BALANCE REMAINING IN MACHINE: $" + moneyInMachine);
         logTransaction(inputSlot);
         purchaseMenu();
@@ -279,17 +281,32 @@ public class VendingMachine {
 
 
 
-    public void salesReport() {
-        System.out.println("*** SALES REPORT ***");
+    public void reportSales() {
+        System.out.println("*** SALES REPORT CREATED ***");
         System.out.println();
-        // Make a map that with the key being the purchased Item and the value as the quantity purchased.
-        // Map is a new map from looping through the inventory file and setting the name as key and value is 0 until purchase when I will increment the quantity ++
-        // Add a new instance variable for total sales amount.
-        //Loop through the Map and print each key value pair separated my a pipe character |
-        // Print total sales amount
-        // return to the main menu
+        SalesReport newSalesReport = new SalesReport(machineInventory, totalProfit);
+        newSalesReport.writeReport();
+        System.out.print("Would you like to view the sales Report before returning to the menu? (Y/N): ");
+        String answer = userInput.nextLine();
+        if (answer.equalsIgnoreCase("y")) {
+            List<String> slots = new ArrayList<>(newSalesReport.getSalesInventory().keySet());
+            Collections.sort(slots);
+            for (String slot : slots) {
+                System.out.println(slot + " | " + newSalesReport.getSalesInventory().get(slot));
+            }
+            System.out.println();
+            System.out.println("*** Total Sales *** $" + totalProfit);
+            System.out.println();
+            mainMenu();
+        } else if (answer.equalsIgnoreCase("n")) {
+            System.out.println();
+            mainMenu();
+        } else {
+            System.out.println("INPUT NOT VALID, USER RETURNED TO MENU");
+            System.out.println();
+            mainMenu();
+        }
     }
-    
     // Exit the vending machine
 
 

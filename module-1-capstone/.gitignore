@@ -60,3 +60,6 @@ cypress/videos
 # OS files
 Thumbs.db
 .DS_Store
+
+# log.txt file and all sales report files
+src/main/resources/

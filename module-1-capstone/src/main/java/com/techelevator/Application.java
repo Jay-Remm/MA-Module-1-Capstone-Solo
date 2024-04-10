@@ -13,10 +13,7 @@ public class Application {
 		System.out.println();
 		vendOMatic.mainMenu();
 
-		// Hidden menu options in the main menu that shows a sales report since the machine started
-
 	}
 }
-
 
 // Work on making a UI for the vending machine on the front end and then figure out how to link the java files with the front end
