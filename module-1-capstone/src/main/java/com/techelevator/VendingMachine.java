@@ -2,11 +2,15 @@ package com.techelevator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class VendingMachine {
 
     Scanner userInput = new Scanner(System.in);
+    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss aa");
 
     // Instance variables are slot location, product name, price, and type
     private String slotLocation;
@@ -14,6 +18,7 @@ public class VendingMachine {
     private double price;
     private String typeOfProduct;
     private File inventoryFile;
+    private File logFile = new File("module-1-capstone/src/main/resources/Log.txt");
     Map<String, Product> machineInventory = new HashMap<>();
     private double moneyInMachine = 0.00;
 
@@ -88,7 +93,8 @@ public class VendingMachine {
             System.out.println("*** THANK YOU FOR USING VEND'O'MATIC ***");
             System.out.println("****** GOOD BYE ******");
         } else if (userChoice.equals("4")) {
-            // Hidden sales report call
+            System.out.println();
+            salesReport();
         } else {
             System.out.println("User input not accepted.");
             System.out.println("Please choose from menu options below (input must be numeric):");
@@ -162,6 +168,7 @@ public class VendingMachine {
         String billInserted = userInput.nextLine();
         if (billInserted.equals("1") || billInserted.equals("2") || billInserted.equals("5") || billInserted.equals("10") || billInserted.equals("20")) {
             moneyInMachine += Double.parseDouble(billInserted);
+            logFeed(billInserted);
             purchaseMenu();
         } else {
             if (Double.parseDouble(billInserted) > 20) {
@@ -210,10 +217,12 @@ public class VendingMachine {
         machineInventory.get(inputSlot).setQuantityRemaining(machineInventory.get(inputSlot).getQuantityRemaining() - 1);
         moneyInMachine -= machineInventory.get(inputSlot).getPrice();
         System.out.println("BALANCE REMAINING IN MACHINE: $" + moneyInMachine);
+        logTransaction(inputSlot);
         purchaseMenu();
     }
 
     public void finishTransaction() {
+        double change = moneyInMachine;
         int quarters = 0;
         int dimes = 0;
         int nickles = 0;
@@ -233,8 +242,54 @@ public class VendingMachine {
         System.out.println();
         System.out.println("*** THANK YOU FOR YOUR CHOOSING VEND'O'MATIC ***");
         System.out.println();
+        logChange(change);
         mainMenu();
     }
+
+
+
+
+    // Log Vending Machine Transactions
+    public void logFeed(String billInserted) {
+        Date currentTime = new Date();
+        try (PrintWriter dataOutput = new PrintWriter(new FileOutputStream(logFile, true))) {
+            dataOutput.println(formatter.format(currentTime) + " FEED MONEY: $" + billInserted + " $" + moneyInMachine);
+        } catch (FileNotFoundException e) {
+            System.out.println("Cannot open file for writing " + logFile.getAbsolutePath());
+        }
+    }
+
+    public void logTransaction(String inputSlot) {
+        Date currentTime = new Date();
+        try (PrintWriter dataOutput = new PrintWriter(new FileOutputStream(logFile, true))) {
+            dataOutput.println(formatter.format(currentTime) + " " + machineInventory.get(inputSlot).getName() + " " + inputSlot + " $" + machineInventory.get(inputSlot).getPrice() + " $" + moneyInMachine);
+        } catch (FileNotFoundException e) {
+            System.out.println("Cannot open file for writing " + logFile.getAbsolutePath());
+        }
+    }
+
+    public void logChange(double change) {
+        Date currentTime = new Date();
+        try (PrintWriter dataOutput = new PrintWriter(new FileOutputStream(logFile, true))) {
+            dataOutput.println(formatter.format(currentTime) + " GIVE CHANGE: $" + change + " $" + moneyInMachine);
+        } catch (FileNotFoundException e) {
+            System.out.println("Cannot open file for writing " + logFile.getAbsolutePath());
+        }
+    }
+
+
+
+    public void salesReport() {
+        System.out.println("*** SALES REPORT ***");
+        System.out.println();
+        // Make a map that with the key being the purchased Item and the value as the quantity purchased.
+        // Map is a new map from looping through the inventory file and setting the name as key and value is 0 until purchase when I will increment the quantity ++
+        // Add a new instance variable for total sales amount.
+        //Loop through the Map and print each key value pair separated my a pipe character |
+        // Print total sales amount
+        // return to the main menu
+    }
+    
     // Exit the vending machine
 
 

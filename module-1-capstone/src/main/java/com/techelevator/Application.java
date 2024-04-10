@@ -13,14 +13,7 @@ public class Application {
 		System.out.println();
 		vendOMatic.mainMenu();
 
-
-		// Log all transactions to a log file
-
-
 		// Hidden menu options in the main menu that shows a sales report since the machine started
-
-
-		
 
 	}
 }
